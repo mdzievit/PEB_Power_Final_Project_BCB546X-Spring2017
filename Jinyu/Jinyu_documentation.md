@@ -91,6 +91,8 @@ wc -l genetic_map_data_EXPIM2012.txt
 ```
 
 
+The above code shows that there are 4393 polymorphism SNPs present in the file genetic\_map\_data\_EXPIM2012.txt . And this agrees with what it presented in the paper. 
+
 ###4. create header lines and add it to the physical\_map\_data.txt and genetic\_map\_data\_EXPIM2012.txt to create another two files physical\_map\_data\_wh.txt, genetic\_map\_data\_EXPIM2012\_wh.txt.
 
 **-The following command lines are used to create the header files for physical\_file\_header.txt and the genetic\_file\_header.txt**
