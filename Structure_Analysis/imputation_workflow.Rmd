@@ -1,0 +1,148 @@
+---
+title: "Structure Analysis"
+output: html_notebook
+---
+## Workflow for creating structure analysis and PCA dataset
+### Data Exploration
+1. Loading necessary packages
+2. Copied genetic_map_data_EXPIM2012_wh from Jinyu's pre-process workflow (Copied 4.19.17)
+3. Importing genetic map file into R for analysis and investigating data structure
+4. Loading in the genotype file. We need to ignore the first line because it is a descriptior (head in unix). Also, we need this file to filter out the hybrids for our analysis.
+```{r}
+library(dplyr)
+library(tidyr)
+library(pcaMethods)
+
+setwd("C:/Users/mdzievit.IASTATE/Dropbox/Classes/EEOB_546X/PEB_Power_Final_Project/Structure_Analysis/")
+data <- read.delim("genetic_map_data_EXPIM2012_wh.txt",header = TRUE)
+dim(data)
+colnames(data)[1:5]
+genotype <- read.delim("Table_S1.txt",header = TRUE, skip = 1)
+colnames(genotype)
+
+
+```
+  - checking the dimensions of the data tells me it is markers x genotypes
+  - Only showed the first 5 column names. This gives me an idea of how to tidy the data
+
+### Filter hybrids out of the data
+1. We need to manipulate the data to add the market class information to the data file and filter out the hybrids since the paper only focused on the inbred lines
+```{r}
+##Transform the matrix
+data_t <- t(data)
+
+##Adding the columns and removing the 3 lines (markers, chr, cm)
+colnames(data_t) <- data_t[1,]
+data_t <- data_t[-(1:3),]
+
+##Converting to dataframe
+data_t <- as.data.frame(data_t)
+
+##Adding the row names to the same column name as the genotype file
+data_t$SolCAP.T.number <- rownames(data_t)
+rownames(data_t) <- NULL
+
+##Checking the levels of the market class
+levels(genotype$Market.Class)
+
+##Joining the market class info, filtering out hyrbids, dropping the market class, and transforming the table back to the original way
+data_t_info <- genotype %>% 
+  select(SolCAP.T.number, Market.Class) %>% 
+  full_join(data_t, by = c("SolCAP.T.number")) %>%
+  filter(Market.Class != "Hybrid") %>%
+  select(everything(),-Market.Class)
+
+##Making the first line the header and removing that line
+data_filt_info <- t(data_t_info)
+data_filt_info <- cbind(rownames(data_filt_info),data_filt_info)
+rownames(data_filt_info) <- NULL
+data_filt_info <- as.data.frame(data_filt_info)
+colnames(data_filt_info) <- unlist(data_filt_info[1,])
+data_filt_info <- data_filt_info[-1,]
+
+##Checking the col names, need to rename the marker column name
+colnames(data_filt_info)[1:3]
+colnames(data)[1:3]
+colnames(data_filt_info)[1] <- "SNP.markers"
+```
+
+
+
+### Tidy up the data
+1. Tidy data. We want to keep marker SNP.markers (the name of marker), dropping chr and position. Creating the Genotype and SNP variable
+```{r}
+tidy.data <- data_filt_info %>% gather(Genotype,SNP,-SNP.markers)
+```
+2. summarizing the number of calls for each SNP type
+```{r}
+tidy.data.snps <- tidy.data %>% group_by(SNP.markers,SNP) %>% 
+  summarize(n = n())
+```
+3. Identifying the different SNP types
+```{r}
+snpType <- unique(tidy.data.snps$SNP)
+snpType
+```
+  - this shows the different types of SNP types we have in the data: hets, missing data, etc. This will allow us to easily convert into 2, 1, and 0
+
+4. Convert missing data into NA and then convert hets into 1. This will only leave the homozygous classes. Subset these converted rows into a new variable. We will join them together again.
+```{r}
+tidy.data.snps.conv <- tidy.data.snps %>% group_by(SNP.markers) %>%
+  mutate(SNP.Converted = ifelse(SNP == "--",SNP,
+                                ifelse(SNP != "AA" & SNP != "CC" &
+                                         SNP != "GG" & SNP != "TT","1",SNP)))
+tidy.data.snps.conv.htms <- tidy.data.snps.conv %>%
+  filter(SNP.Converted == "1" | SNP.Converted == "--" )
+```
+5. Need to subset the homozygous alleles, and then convert the minor alle to 0 and common allele to 2
+```{r}
+tidy.data.snps.conv.hom <- tidy.data.snps.conv %>% group_by(SNP.markers) %>%
+  filter(SNP.Converted != "--"  & SNP.Converted != "1") %>% 
+  mutate(rank = dense_rank(desc(n))) %>% 
+  mutate(SNP.Converted = ifelse(rank == 1, "2","0")) %>% select(-rank)
+```
+6. Going to rejoin the converted data together again, convert missing to NA, and convert the SNP.Converted column to numeric. Also, removed all dataframes except for last one created.
+```{r}
+tidy.data.snps.all.conv <- tidy.data.snps.conv.hom %>%
+  full_join(tidy.data.snps.conv.htms,by =
+              c("SNP.markers","SNP","n","SNP.Converted")) %>%
+  mutate(SNP.Converted = ifelse(SNP.Converted == "--",NA,SNP.Converted))
+tidy.data.snps.all.conv$SNP.Converted <- 
+  as.integer(tidy.data.snps.all.conv$SNP.Converted)
+data.conv <- tidy.data %>% 
+  left_join(tidy.data.snps.all.conv,by = c("SNP.markers","SNP")) %>%
+  select(everything(),-SNP,-n)
+rm(list = setdiff(ls(),"data.conv"))
+head(data.conv,4)
+```
+
+### Imputing missing data using pcaMethods
+1. The paper used SVDimpute algorithm. Used the recommended settings from package documentation.
+  - Need to spread out the data, convert to matrix, transform matrix to have genotypes x markers, make the first row the columns names (marker names), and then remove the first row
+  - Left with a matrix with rownames as genotypes and colnames as marker names.
+```{r}
+data.conv.wide <- data.conv %>%
+  spread(Genotype,SNP.Converted)
+data.conv.wide <- as.matrix(data.conv.wide)
+data.conv.wide <- t(data.conv.wide)
+colnames(data.conv.wide) <- data.conv.wide[1,]
+data.conv.wide <- data.conv.wide[-1,]
+class(data.conv.wide) <- "numeric"
+```
+2. Run the svdImpute algorithm using the recommended settings
+  - First need to prep the matrix
+```{r}
+data.conv.prep <- prep(data.conv.wide,scale = "none", center = TRUE)
+
+data.imputed <- pca(data.conv.prep, method = "svdImpute",
+                    center = FALSE, nPcs = 5)
+
+```
+3. Output the completeObs from the imputed results
+4. Write the data to a text file file for future work
+```{r}
+imputed <- completeObs(data.imputed)
+write.table(imputed,"imputed_genetic_map_data_EXPIM2012_wh.txt",sep = "\t",quote = FALSE,col.names = NA)
+```
+
+

@@ -1,0 +1,113 @@
+---
+title: "PCA_Analysis"
+output: html_document
+---
+### PCA Analysis
+1. Load necessary libraries
+2. Import the imputed data file created from imputation_workflow
+3. Make sure col and row names are set properly, and remove if necessary
+```{r}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+setwd("C:/Users/mdzievit.IASTATE/Dropbox/Classes/EEOB_546X/PEB_Power_Final_Project/Structure_Analysis/")
+data <- read.delim("imputed_genetic_map_data_EXPIM2012_wh.txt",header = TRUE)
+rownames(data) <- data[,1]
+data <- data[,-1]
+```
+4. Run PCA analysis. Paper did not give a lot of details regardint their methods and settings they used.
+  - Set 2 new variables x and VAR. These are the PC scores (x) and the variance explained by each of the PCs
+```{r}
+pca.data <- prcomp(data,center = TRUE)
+x.pca.data <- pca.data$x
+x.pca.data <- as.data.frame(x.pca.data)
+var.pca.data <- summary(pca.data)
+var.pca.data <- var.pca.data$importance
+var.pca.data <- var.pca.data[2,]
+```
+
+## Import genotype information to make PCA plots
+# Plot #1 using all sub-populations
+1. Import the genotype information file. Skipping the first line as it is just a descriptor that it is a table. Checked the head information in gitbash
+  - Also need to rename and add the genotype name column in the x.pca.data so we can join them later
+```{r}
+genotype <- read.delim("Table_S1.txt",header = TRUE, skip = 1)
+colnames(genotype)
+genotype <- genotype %>% select(SolCAP.T.number,Market.Class)
+x.pca.data$SolCAP.T.number <- rownames(x.pca.data)
+```
+2. Join the genotype information file with the PC file
+```{r}
+info.x.pca.data <- genotype %>% 
+  right_join(x.pca.data, by = c("SolCAP.T.number")) %>%
+  droplevels()
+```
+3. Plot the data to look like the figure from the paper
+```{r}
+##Determines the levels of the market
+levels(info.x.pca.data$Market.Class)
+
+##Identified incorrect classifications in the genotype file related to the original PCA figure. Need to correct these to make the right plot. Fresh market/Processing is one that was changed after so it will be color coded as fresh market. Vintage/processing were ones that were changed after analysis, so will be color coded as processing
+
+##Colors and shapes match the paper
+colors <- c("violet","Blue","Blue","Gold","Red","Green","Red","Black","Gray")
+shapes <- c(0,1,1,4,2,3,2,5,22)
+
+ggplot(aes(x = PC1, y = PC2),data = info.x.pca.data) + 
+  geom_point(aes(colour = Market.Class, shape = Market.Class),size = 3) +
+  scale_color_manual(values = colors) +
+  scale_shape_manual(values = shapes)
+```
+
+# Plot#2 Using data for only 3 large-fruited cultivated sub-populations
+- This consists of processing, fresh market, and vintage
+1. Need to subset the data for the different types for the analysis
+```{r}
+data.info <- data
+data.info$SolCAP.T.number <- rownames(data.info) 
+data.info <- genotype %>% 
+  right_join(data.info, by = c("SolCAP.T.number")) %>%
+  droplevels()
+
+data.filt <- data.info %>%
+  filter(Market.Class == "Fresh market" | Market.Class == "Processing" | 
+           Market.Class == "Fresh market/Processing" |
+           Market.Class == "Processing" | Market.Class == "Vintage" |
+           Market.Class == "Vintage/Processing") %>%
+  select(-Market.Class) %>%
+  droplevels()
+rownames(data.filt) <- data.filt$SolCAP.T.number
+data.filt$SolCAP.T.number <- NULL
+
+```
+2. Run PCA on the new dataset and subset important information
+```{r}
+pca2.data.filt <- prcomp(data.filt,center = TRUE)
+x.pca2.data.filt <- pca2.data.filt$x
+x.pca2.data.filt <- as.data.frame(x.pca2.data.filt)
+var.pca2.data.filt <- summary(pca2.data.filt)
+var.pca2.data.filt <- var.pca2.data.filt$importance
+var.pca2.data.filt <- var.pca2.data.filt[2,]
+```
+
+3. Recombine with the genotype information
+```{r}
+x.pca2.data.filt$SolCAP.T.number <- rownames(x.pca2.data.filt)
+info.x.pca2.data.filt <- genotype %>% 
+  right_join(x.pca2.data.filt, by = c("SolCAP.T.number")) %>%
+  droplevels()
+
+```
+
+4. Plot the figure using the details from the paper
+```{r}
+levels(info.x.pca2.data.filt$Market.Class)
+colors2 <- c("Blue","Blue","Red","Green","Red")
+shapes2 <- c(1,1,2,3,2)
+ggplot(aes(x = PC1, y = PC2),data = info.x.pca2.data.filt) + 
+  geom_point(aes(colour = Market.Class, shape = Market.Class),size = 3) +
+  scale_color_manual(values = colors2) +
+  scale_shape_manual(values = shapes2)
+
+```
+
