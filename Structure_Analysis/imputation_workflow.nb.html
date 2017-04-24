@@ -229,13 +229,9 @@ $(document).ready(function () {
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGlkeS5kYXRhIDwtIGRhdGFfZmlsdF9pbmZvICU+JSBnYXRoZXIoR2Vub3R5cGUsU05QLC1TTlAubWFya2VycylcblxuYGBgIn0= -->
-<pre class="r"><code>tidy.data &lt;- data_filt_info %&gt;% gather(Genotype,SNP,-SNP.markers)
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGlkeS5kYXRhIDwtIGRhdGFfZmlsdF9pbmZvICU+JSBnYXRoZXIoR2Vub3R5cGUsU05QLC1TTlAubWFya2VycylcbmBgYCJ9 -->
+<pre class="r"><code>tidy.data &lt;- data_filt_info %&gt;% gather(Genotype,SNP,-SNP.markers)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiYXR0cmlidXRlcyBhcmUgbm90IGlkZW50aWNhbCBhY3Jvc3MgbWVhc3VyZSB2YXJpYWJsZXM7IHRoZXkgd2lsbCBiZSBkcm9wcGVkXG4ifQ== -->
-<pre><code>attributes are not identical across measure variables; they will be dropped</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <ol start="2" style="list-style-type: decimal">
@@ -243,13 +239,10 @@ $(document).ready(function () {
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGlkeS5kYXRhLnNucHMgPC0gdGlkeS5kYXRhICU+JSBncm91cF9ieShHZW5vdHlwZSxTTlAubWFya2VycyxTTlApICU+JSBzdW1tYXJpemUobj1uKFNOUCkpXG5cbmBgYCJ9 -->
-<pre class="r"><code>tidy.data.snps &lt;- tidy.data %&gt;% group_by(Genotype,SNP.markers,SNP) %&gt;% summarize(n=n(SNP))
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGlkeS5kYXRhLnNucHMgPC0gdGlkeS5kYXRhICU+JSBncm91cF9ieShTTlAubWFya2VycyxTTlApICU+JSBcbiAgc3VtbWFyaXplKG4gPSBuKCkpXG5gYGAifQ== -->
+<pre class="r"><code>tidy.data.snps &lt;- tidy.data %&gt;% group_by(SNP.markers,SNP) %&gt;% 
+  summarize(n = n())</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gc3VtbWFyaXNlX2ltcGwoLmRhdGEsIGRvdHMpIDogbiBkb2VzIG5vdCB0YWtlIGFyZ3VtZW50c1xuIn0= -->
-<pre><code>Error in summarise_impl(.data, dots) : n does not take arguments</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <ol start="3" style="list-style-type: decimal">
@@ -274,17 +267,14 @@ $(document).ready(function () {
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGlkeS5kYXRhLnNucHMuY29udiA8LSB0aWR5LmRhdGEuc25wcyAlPiUgZ3JvdXBfYnkoR2Vub3R5cGUsU05QLm1hcmtlcnMpICU+JVxuICBtdXRhdGUoU05QLkNvbnZlcnRlZCA9IGlmZWxzZShTTlAgPT0gXCItLVwiLFNOUCxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWZlbHNlKFNOUCAhPSBcIkFBXCIgJiBTTlAgIT0gXCJDQ1wiICZcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgU05QICE9IFwiR0dcIiAmIFNOUCAhPSBcIlRUXCIsXCIxXCIsU05QKSkpXG5cbmBgYCJ9 -->
-<pre class="r"><code>tidy.data.snps.conv &lt;- tidy.data.snps %&gt;% group_by(Genotype,SNP.markers) %&gt;%
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGlkeS5kYXRhLnNucHMuY29udiA8LSB0aWR5LmRhdGEuc25wcyAlPiUgZ3JvdXBfYnkoU05QLm1hcmtlcnMpICU+JVxuICBtdXRhdGUoU05QLkNvbnZlcnRlZCA9IGlmZWxzZShTTlAgPT0gXCItLVwiLFNOUCxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWZlbHNlKFNOUCAhPSBcIkFBXCIgJiBTTlAgIT0gXCJDQ1wiICZcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgU05QICE9IFwiR0dcIiAmIFNOUCAhPSBcIlRUXCIsXCIxXCIsU05QKSkpXG50aWR5LmRhdGEuc25wcy5jb252Lmh0bXMgPC0gdGlkeS5kYXRhLnNucHMuY29udiAlPiVcbiAgZmlsdGVyKFNOUC5Db252ZXJ0ZWQgPT0gXCIxXCIgfCBTTlAuQ29udmVydGVkID09IFwiLS1cIiApXG5gYGAifQ== -->
+<pre class="r"><code>tidy.data.snps.conv &lt;- tidy.data.snps %&gt;% group_by(SNP.markers) %&gt;%
   mutate(SNP.Converted = ifelse(SNP == &quot;--&quot;,SNP,
                                 ifelse(SNP != &quot;AA&quot; &amp; SNP != &quot;CC&quot; &amp;
                                          SNP != &quot;GG&quot; &amp; SNP != &quot;TT&quot;,&quot;1&quot;,SNP)))
-</code></pre>
+tidy.data.snps.conv.htms &lt;- tidy.data.snps.conv %&gt;%
+  filter(SNP.Converted == &quot;1&quot; | SNP.Converted == &quot;--&quot; )</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gcmVzb2x2ZV92YXJzKG5ld19ncm91cHMsIHRibF92YXJzKC5kYXRhKSkgOiBcbiAgdW5rbm93biB2YXJpYWJsZSB0byBncm91cCBieSA6IEdlbm90eXBlXG4ifQ== -->
-<pre><code>Error in resolve_vars(new_groups, tbl_vars(.data)) : 
-  unknown variable to group by : Genotype</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <ol start="5" style="list-style-type: decimal">
@@ -292,16 +282,12 @@ $(document).ready(function () {
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGlkeS5kYXRhLnNucHMuY29udi5ob20gPC0gdGlkeS5kYXRhLnNucHMuY29udiAlPiUgZ3JvdXBfYnkoU05QLm1hcmtlcnMpICU+JVxuICBmaWx0ZXIoU05QLkNvbnZlcnRlZCAhPSAgfCBTTlAuQ29udmVydGVkICE9IFwiMVwiKSAlPiUgXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGlkeS5kYXRhLnNucHMuY29udi5ob20gPC0gdGlkeS5kYXRhLnNucHMuY29udiAlPiUgZ3JvdXBfYnkoU05QLm1hcmtlcnMpICU+JVxuICBmaWx0ZXIoU05QLkNvbnZlcnRlZCAhPSBcIi0tXCIgICYgU05QLkNvbnZlcnRlZCAhPSBcIjFcIikgJT4lIFxuICBtdXRhdGUocmFuayA9IGRlbnNlX3JhbmsoZGVzYyhuKSkpICU+JSBcbiAgbXV0YXRlKFNOUC5Db252ZXJ0ZWQgPSBpZmVsc2UocmFuayA9PSAxLCBcIjJcIixcIjBcIikpICU+JSBzZWxlY3QoLXJhbmspXG5gYGAifQ== -->
 <pre class="r"><code>tidy.data.snps.conv.hom &lt;- tidy.data.snps.conv %&gt;% group_by(SNP.markers) %&gt;%
-  filter(SNP.Converted !=  | SNP.Converted != &quot;1&quot;) %&gt;% 
-</code></pre>
+  filter(SNP.Converted != &quot;--&quot;  &amp; SNP.Converted != &quot;1&quot;) %&gt;% 
+  mutate(rank = dense_rank(desc(n))) %&gt;% 
+  mutate(SNP.Converted = ifelse(rank == 1, &quot;2&quot;,&quot;0&quot;)) %&gt;% select(-rank)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IHVuZXhwZWN0ZWQgJ3wnIGluOlxuXCJ0aWR5LmRhdGEuc25wcy5jb252LmhvbSA8LSB0aWR5LmRhdGEuc25wcy5jb252ICU+JSBncm91cF9ieShTTlAubWFya2VycykgJT4lXG4gIGZpbHRlcihTTlAuQ29udmVydGVkICE9ICB8XCJcbiJ9 -->
-<pre><code>Error: unexpected '|' in:
-&quot;tidy.data.snps.conv.hom &lt;- tidy.data.snps.conv %&gt;% group_by(SNP.markers) %&gt;%
-  filter(SNP.Converted !=  |&quot;</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <ol start="6" style="list-style-type: decimal">
@@ -330,15 +316,15 @@ $(document).ready(function () {
 </ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YS5jb252LndpZGUgPC0gZGF0YS5jb252ICU+JSBcbiAgc2VsZWN0KGV2ZXJ5dGhpbmcoKSwtQ2hyb21vc29tZSwtUG9zaXRpb24uY00pICU+JVxuICBzcHJlYWQoR2Vub3R5cGUsU05QLkNvbnZlcnRlZClcblxuYGBgIn0= -->
-<pre class="r"><code>data.conv.wide &lt;- data.conv %&gt;% 
-  select(everything(),-Chromosome,-Position.cM) %&gt;%
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGF0YS5jb252LndpZGUgPC0gZGF0YS5jb252ICU+JVxuICBzcHJlYWQoR2Vub3R5cGUsU05QLkNvbnZlcnRlZClcbmRhdGEuY29udi53aWRlIDwtIGFzLm1hdHJpeChkYXRhLmNvbnYud2lkZSlcbmRhdGEuY29udi53aWRlIDwtIHQoZGF0YS5jb252LndpZGUpXG5jb2xuYW1lcyhkYXRhLmNvbnYud2lkZSkgPC0gZGF0YS5jb252LndpZGVbMSxdXG5kYXRhLmNvbnYud2lkZSA8LSBkYXRhLmNvbnYud2lkZVstMSxdXG5jbGFzcyhkYXRhLmNvbnYud2lkZSkgPC0gXCJudW1lcmljXCJcbmBgYCJ9 -->
+<pre class="r"><code>data.conv.wide &lt;- data.conv %&gt;%
   spread(Genotype,SNP.Converted)
-</code></pre>
+data.conv.wide &lt;- as.matrix(data.conv.wide)
+data.conv.wide &lt;- t(data.conv.wide)
+colnames(data.conv.wide) &lt;- data.conv.wide[1,]
+data.conv.wide &lt;- data.conv.wide[-1,]
+class(data.conv.wide) &lt;- &quot;numeric&quot;</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gZXZhbChleHByLCBlbnZpciwgZW5jbG9zKSA6IG9iamVjdCAnQ2hyb21vc29tZScgbm90IGZvdW5kXG4ifQ== -->
-<pre><code>Error in eval(expr, envir, enclos) : object 'Chromosome' not found</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <ol start="2" style="list-style-type: decimal">
@@ -365,14 +351,10 @@ $(document).ready(function () {
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud3JpdGUudGFibGUoaW1wdXRlZCxcImltcHV0ZWRfZ2VuZXRpY19tYXBfZGF0YV9FWFBJTTIwMTJfd2gudHh0XCIsc2VwID0gXCJcXHRcIixxdW90ZSA9IEZBTFNFLGNvbC5uYW1lcyA9IE5BKVxuXG5gYGAifQ== -->
-<pre class="r"><code>write.table(imputed,&quot;imputed_genetic_map_data_EXPIM2012_wh.txt&quot;,sep = &quot;\t&quot;,quote = FALSE,col.names = NA)
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW1wdXRlZCA8LSBjb21wbGV0ZU9icyhkYXRhLmltcHV0ZWQpXG53cml0ZS50YWJsZShpbXB1dGVkLFwiaW1wdXRlZF9nZW5ldGljX21hcF9kYXRhX0VYUElNMjAxMl93aC50eHRcIixzZXAgPSBcIlxcdFwiLHF1b3RlID0gRkFMU0UsY29sLm5hbWVzID0gTkEpXG5gYGAifQ== -->
+<pre class="r"><code>imputed &lt;- completeObs(data.imputed)
+write.table(imputed,&quot;imputed_genetic_map_data_EXPIM2012_wh.txt&quot;,sep = &quot;\t&quot;,quote = FALSE,col.names = NA)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiY2Fubm90IG9wZW4gZmlsZSAnaW1wdXRlZF9nZW5ldGljX21hcF9kYXRhX0VYUElNMjAxMl93aC50eHQnOiBQZXJtaXNzaW9uIGRlbmllZEVycm9yIGluIGZpbGUoZmlsZSwgaWZlbHNlKGFwcGVuZCwgXCJhXCIsIFwid1wiKSkgOiBcbiAgY2Fubm90IG9wZW4gdGhlIGNvbm5lY3Rpb25cbiJ9 -->
-<pre><code>cannot open file 'imputed_genetic_map_data_EXPIM2012_wh.txt': Permission deniedError in file(file, ifelse(append, &quot;a&quot;, &quot;w&quot;)) : 
-  cannot open the connection</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->

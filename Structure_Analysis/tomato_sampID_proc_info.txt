@@ -1,0 +1,313 @@
+SolCAP.T.number	Market.Class
+SCT_0001	Processing
+SCT_0002	Processing
+SCT_0003	Processing
+SCT_0004	Processing
+SCT_0005	Processing
+SCT_0006	Processing
+SCT_0007	Processing
+SCT_0008	Processing
+SCT_0009	Processing
+SCT_0010	Processing
+SCT_0011	Processing
+SCT_0012	Processing
+SCT_0013	Processing
+SCT_0014	Processing
+SCT_0015	Processing
+SCT_0016	Processing
+SCT_0017	Processing
+SCT_0018	Processing
+SCT_0019	Processing
+SCT_0020	Processing
+SCT_0021	Processing
+SCT_0022	Processing
+SCT_0023	Processing
+SCT_0024	Processing
+SCT_0025	Processing
+SCT_0026	Processing
+SCT_0027	Processing
+SCT_0028	Processing
+SCT_0029	Processing
+SCT_0030	Processing
+SCT_0031	Processing
+SCT_0032	Processing
+SCT_0033	Processing
+SCT_0034	Processing
+SCT_0035	Processing
+SCT_0036	Processing
+SCT_0037	Processing
+SCT_0038	Processing
+SCT_0039	Processing
+SCT_0040	Processing
+SCT_0041	Processing
+SCT_0042	Processing
+SCT_0043	Processing
+SCT_0044	Processing
+SCT_0045	Processing
+SCT_0046	Processing
+SCT_0047	Processing
+SCT_0048	Processing
+SCT_0049	Processing
+SCT_0050	Processing
+SCT_0051	Processing
+SCT_0052	Processing
+SCT_0053	Processing
+SCT_0054	Processing
+SCT_0055	Processing
+SCT_0056	Processing
+SCT_0057	Processing
+SCT_0058	Processing
+SCT_0059	Processing
+SCT_0060	Processing
+SCT_0061	Processing
+SCT_0062	Processing
+SCT_0063	Processing
+SCT_0064	Processing
+SCT_0065	Processing
+SCT_0066	Processing
+SCT_0067	Processing
+SCT_0068	Processing
+SCT_0069	Processing
+SCT_0070	Processing
+SCT_0071	Processing
+SCT_0072	Processing
+SCT_0075	Processing
+SCT_0076	Processing
+SCT_0077	Processing
+SCT_0078	Processing
+SCT_0079	Processing
+SCT_0080	Processing
+SCT_0081	Processing
+SCT_0082	Processing
+SCT_0083	Processing
+SCT_0084	Processing
+SCT_0085	Processing
+SCT_0086	Processing
+SCT_0087	Processing
+SCT_0088	Processing
+SCT_0089	Processing
+SCT_0090	Processing
+SCT_0091	Processing
+SCT_0092	Processing
+SCT_0093	Processing
+SCT_0094	Processing
+SCT_0095	Processing
+SCT_0096	Processing
+SCT_0097	Processing
+SCT_0098	Processing
+SCT_0099	Processing
+SCT_0100	Processing
+SCT_0101	Processing
+SCT_0102	Processing
+SCT_0103	Processing
+SCT_0104	Processing
+SCT_0105	Processing
+SCT_0106	Processing
+SCT_0107	Processing
+SCT_0108	Processing
+SCT_0109	Processing
+SCT_0110	Processing
+SCT_0111	Processing
+SCT_0112	Processing
+SCT_0113	Processing
+SCT_0114	Processing
+SCT_0115	Processing
+SCT_0116	Processing
+SCT_0117	Processing
+SCT_0118	Processing
+SCT_0119	Processing
+SCT_0120	Processing
+SCT_0121	Processing
+SCT_0122	Processing
+SCT_0123	Processing
+SCT_0124	Processing
+SCT_0125	Processing
+SCT_0126	Processing
+SCT_0127	Processing
+SCT_0128	Processing
+SCT_0129	Processing
+SCT_0130	Processing
+SCT_0131	Processing
+SCT_0132	Processing
+SCT_0133	Processing
+SCT_0134	Processing
+SCT_0135	Processing
+SCT_0136	Processing
+SCT_0137	Processing
+SCT_0138	Processing
+SCT_0139	Processing
+SCT_0140	Processing
+SCT_0141	Processing
+SCT_0142	Processing
+SCT_0478	Processing
+SCT_0143	Fresh market
+SCT_0144	Fresh market
+SCT_0150	Fresh market
+SCT_0157	Fresh market
+SCT_0158	Fresh market
+SCT_0159	Fresh market
+SCT_0160	Fresh market
+SCT_0161	Fresh market
+SCT_0162	Fresh market
+SCT_0164	Fresh market
+SCT_0165	Fresh market
+SCT_0172	Fresh market
+SCT_0173	Fresh market
+SCT_0174	Fresh market
+SCT_0175	Fresh market
+SCT_0176	Fresh market
+SCT_0177	Fresh market
+SCT_0178	Fresh market
+SCT_0179	Fresh market
+SCT_0180	Fresh market
+SCT_0181	Fresh market
+SCT_0182	Fresh market
+SCT_0183	Fresh market
+SCT_0184	Fresh market
+SCT_0185	Fresh market
+SCT_0186	Fresh market
+SCT_0187	Fresh market
+SCT_0188	Fresh market
+SCT_0189	Fresh market
+SCT_0190	Fresh market
+SCT_0191	Fresh market
+SCT_0192	Fresh market
+SCT_0193	Fresh market
+SCT_0194	Fresh market
+SCT_0195	Fresh market
+SCT_0196	Fresh market
+SCT_0197	Fresh market
+SCT_0198	Fresh market
+SCT_0199	Fresh market
+SCT_0201	Fresh market
+SCT_0202	Fresh market
+SCT_0203	Fresh market
+SCT_0204	Fresh market
+SCT_0205	Fresh market
+SCT_0206	Fresh market
+SCT_0207	Fresh market
+SCT_0208	Fresh market
+SCT_0209	Fresh market
+SCT_0211	Fresh market
+SCT_0212	Fresh market
+SCT_0214	Fresh market
+SCT_0215	Fresh market
+SCT_0218	Fresh market
+SCT_0219	Fresh market
+SCT_0220	Fresh market
+SCT_0222	Fresh market
+SCT_0224	Fresh market
+SCT_0225	Fresh market
+SCT_0226	Fresh market
+SCT_0227	Fresh market
+SCT_0228	Fresh market
+SCT_0229	Fresh market
+SCT_0230	Fresh market
+SCT_0231	Fresh market
+SCT_0232	Fresh market
+SCT_0233	Fresh market
+SCT_0234	Fresh market
+SCT_0236	Fresh market
+SCT_0237	Fresh market
+SCT_0238	Fresh market
+SCT_0239	Fresh market
+SCT_0240	Fresh market
+SCT_0241	Fresh market
+SCT_0242	Fresh market
+SCT_0243	Fresh market
+SCT_0245	Fresh market
+SCT_0246	Fresh market
+SCT_0247	Fresh market
+SCT_0248	Fresh market
+SCT_0249	Fresh market
+SCT_0251	Fresh market
+SCT_0252	Fresh market
+SCT_0253	Fresh market
+SCT_0254	Fresh market
+SCT_0255	Fresh market
+SCT_0256	Fresh market
+SCT_0258	Fresh market
+SCT_0259	Fresh market
+SCT_0260	Fresh market
+SCT_0261	Fresh market
+SCT_0262	Fresh market
+SCT_0264	Fresh market
+SCT_0267	Fresh market
+SCT_0268	Fresh market
+SCT_0269	Processing
+SCT_0270	Fresh market
+SCT_0271	Fresh market
+SCT_0272	Fresh market
+SCT_0273	Fresh market
+SCT_0274	Fresh market
+SCT_0275	Fresh market
+SCT_0276	Fresh market
+SCT_0277	Fresh market
+SCT_0278	Fresh market
+SCT_0280	Fresh market
+SCT_0281	Fresh market
+SCT_0486	Fresh market
+SCT_0487	Fresh market
+SCT_0492	Fresh market
+SCT_0506	Fresh market
+SCT_0285	Vintage
+SCT_0286	Vintage
+SCT_0287	Vintage
+SCT_0288	Vintage
+SCT_0290	Vintage
+SCT_0291	Vintage
+SCT_0292	Vintage
+SCT_0293	Vintage
+SCT_0295	Vintage
+SCT_0296	Vintage
+SCT_0298	Vintage
+SCT_0299	Vintage
+SCT_0300	Vintage
+SCT_0301	Vintage
+SCT_0302	Vintage
+SCT_0303	Vintage
+SCT_0304	Vintage
+SCT_0305	Vintage
+SCT_0306	Vintage
+SCT_0307	Vintage
+SCT_0308	Vintage
+SCT_0309	Vintage
+SCT_0311	Vintage
+SCT_0312	Vintage
+SCT_0313	Vintage
+SCT_0314	Vintage
+SCT_0316	Vintage
+SCT_0317	Vintage
+SCT_0318	Vintage
+SCT_0319	Vintage
+SCT_0320	Vintage
+SCT_0322	Vintage
+SCT_0324	Vintage
+SCT_0325	Vintage
+SCT_0327	Vintage
+SCT_0329	Vintage
+SCT_0330	Vintage
+SCT_0331	Vintage
+SCT_0332	Vintage
+SCT_0333	Vintage
+SCT_0334	Vintage
+SCT_0335	Vintage
+SCT_0336	Processing
+SCT_0337	Vintage
+SCT_0338	Vintage
+SCT_0340	Processing
+SCT_0357	Vintage
+SCT_0358	Vintage
+SCT_0359	Vintage
+SCT_0360	Vintage
+SCT_0361	Vintage
+SCT_0362	Vintage
+SCT_0363	Vintage
+SCT_0364	Vintage
+SCT_0365	Vintage
+SCT_0366	Vintage
+SCT_0369	Vintage
+SCT_0479	Vintage
+SCT_0480	Vintage
+SCT_0482	Vintage
+SCT_0483	Vintage
