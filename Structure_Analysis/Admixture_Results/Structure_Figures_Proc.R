@@ -64,7 +64,7 @@ origPC_Plot <- ggplot(aes(x = PC1, y = PC2),data = full_PC.subpop2) +
   scale_color_manual(values = colors4) +
   scale_shape_manual(values = shapes4) + 
   theme_bw() +
-  theme(aspect.ratio = 1,legend.position = "bottom",plot.title = element_text(size = 10),
+  theme(aspect.ratio = .75,legend.position = "bottom",plot.title = element_text(size = 10),
         legend.text = element_text(size = 8)) +
   labs(title = "Original processing figure, subpopulations assigned by breeders")
 
@@ -73,8 +73,8 @@ structure2_PC_Plot <- ggplot(aes(x = PC1, y = PC2),data = full_PC.subpop2) +
   scale_color_manual(values = colors5) +
   scale_shape_manual(values = shapes5) + 
   theme_bw() +
-  theme(aspect.ratio = 1,legend.position = "bottom",plot.title = element_text(size = 10),
-        legend.text = element_text(size = 12)) +
+  theme(aspect.ratio = .75,legend.position = "bottom",plot.title = element_text(size = 10),
+        legend.text = element_text(size = 8)) +
   labs(title = "Subpopulation colored according to Admixture (K=2)")
 
 pdf("Proc_PC_Comp-Subpop2.pdf",onefile = TRUE, paper = 'A4r', width = 11, height = 8) 
@@ -95,8 +95,8 @@ structure3_PC_Plot <- ggplot(aes(x = PC1, y = PC2),data = full_PC.subpop3) +
   scale_color_manual(values = colors6) +
   scale_shape_manual(values = shapes6) + 
   theme_bw() +
-  theme(aspect.ratio = 1,legend.position = "bottom",plot.title = element_text(size = 10),
-        legend.text = element_text(size = 12)) +
+  theme(aspect.ratio = .75,legend.position = "bottom",plot.title = element_text(size = 10),
+        legend.text = element_text(size = 8)) +
   labs(title = "Subpopulation colored according to Admixture (K=3)")
 
 pdf("Proc_PC_Comp-Subpop3.pdf",onefile = TRUE, paper = 'A4r', width = 11, height = 8) 
@@ -117,10 +117,15 @@ structure4_PC_Plot <- ggplot(aes(x = PC1, y = PC2),data = full_PC.subpop4) +
   scale_color_manual(values = colors7) +
   scale_shape_manual(values = shapes7) + 
   theme_bw() +
-  theme(aspect.ratio = 1,legend.position = "bottom",plot.title = element_text(size = 10),
-        legend.text = element_text(size = 12)) +
+  theme(aspect.ratio = .75,legend.position = "bottom",plot.title = element_text(size = 10),
+        legend.text = element_text(size = 8)) +
   labs(title = "Subpopulation colored according to Admixture (K=4)")
 
 pdf("Proc_PC_Comp-Subpop4.pdf",onefile = TRUE, paper = 'A4r', width = 11, height = 8) 
 grid.arrange(origPC_Plot,structure4_PC_Plot,ncol = 2)
+dev.off()
+
+
+pdf("All4_Proc.pdf",onefile = TRUE, paper = 'A4r', width = 11, height = 8) 
+grid.arrange(origPC_Plot,structure2_PC_Plot,structure3_PC_Plot,structure4_PC_Plot, ncol = 2)
 dev.off()
