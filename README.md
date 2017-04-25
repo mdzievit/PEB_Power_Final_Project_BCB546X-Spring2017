@@ -27,4 +27,10 @@ Workflow:
 
 ---
 # Organization of the folder
-
+1. Data_Cleanup - contains workflow on how the working files were cleaned up and ready for analysis
+2. LD_Decay - workflow for recreating figures 5/6/7
+3. MAF - Folder containing the workflow for recreating figures 3/4
+4. Presentation - Contains the PPT files for our presentations
+5. Structure_Analysis - contains the files for recreating figure 1 and the additional analysis
+6. Supplemental Data - contains the original supplemental data from the paper
+7. Sim2012....pdf - pdf of the paper

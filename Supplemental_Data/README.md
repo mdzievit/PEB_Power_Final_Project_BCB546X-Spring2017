@@ -1,0 +1,1 @@
+### This contains the text format of the supplemental files. The original paper contains excel files and we needed them as text files. See the Raw_version folder for the true original versions of the supplemental files.
