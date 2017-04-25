@@ -1,0 +1,268 @@
+---
+title: "MAF_analysis"
+author: "Jinyu Wang"
+date: "April 23, 2017"
+output: html_document
+---
+###THe object of this part is to generate Fig.3A and Fig.4A of the paper
+
+Load the ggplot2 library 
+
+```{r}
+library(ggplot2)
+library(ggthemes)
+library(gridExtra)
+library(grid)
+
+```
+
+Set the working directory and load into the data
+
+```{r}
+setwd("C:/Users/jinyuw/Desktop/BCB546X-Project/PEB_Power_Final_Project/Jinyu/MAF_data")
+MAF <- read.delim("SNP_MAF.txt",header = TRUE)
+head(MAF)
+summary(MAF)
+```
+Change the name of each group so that it matches with the label of the plot on the paper 
+```{r}
+MAF$Group <- as.character(MAF$Group)
+MAF$Group[MAF$Group == "Processing"] <- "Proc"
+MAF$Group[MAF$Group == "Fresh_market"] <- "FM"
+MAF$Group[MAF$Group == "Vintage"] <- "Vint"
+MAF$Group <- as.factor(MAF$Group)
+```
+
+
+Reorder the level of group to make it to be the same order as what it shown on the paper 
+```{r}
+MAF$Group <- factor(MAF$Group, levels =c("Proc", "FM", "Vint", "Pimp"))
+```
+
+theme(axis.text.y =element_text(size=12))+
+Subset the data for chromosome 1 and Plot the figure for chromosome 1.
+
+```{r}
+MAF_Chr1 <- MAF[MAF$Chromosome == 1, ]
+dim(MAF_Chr1)
+p1 <- ggplot(MAF_Chr1, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR1", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 80))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p1
+
+```
+
+
+
+```{r}
+MAF_Chr2 <- MAF[MAF$Chromosome == 2, ]
+dim(MAF_Chr2)
+p2<- ggplot(MAF_Chr2, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR2", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 80))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p2
+```
+
+
+```{r}
+MAF_Chr3 <- MAF[MAF$Chromosome == 3, ]
+dim(MAF_Chr3)
+p3<- ggplot(MAF_Chr3, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR3", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 80))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p3
+```
+
+
+```{r}
+MAF_Chr4 <- MAF[MAF$Chromosome == 4, ]
+dim(MAF_Chr4)
+p4<- ggplot(MAF_Chr4, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR4", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 80))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p4
+```
+
+```{r}
+MAF_Chr5 <- MAF[MAF$Chromosome == 5, ]
+dim(MAF_Chr5)
+p5 <- ggplot(MAF_Chr5, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR5", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 80))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p5
+```
+
+```{r}
+MAF_Chr6 <- MAF[MAF$Chromosome == 6, ]
+dim(MAF_Chr6)
+p6 <- ggplot(MAF_Chr6, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR6", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 80))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p6
+```
+
+
+
+```{r}
+MAF_Chr7 <- MAF[MAF$Chromosome == 7, ]
+dim(MAF_Chr7)
+p7 <- ggplot(MAF_Chr7, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR7", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 80))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p7 
+```
+```{r}
+MAF_Chr8 <- MAF[MAF$Chromosome == 8, ]
+dim(MAF_Chr8)
+p8 <- ggplot(MAF_Chr8, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR8", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 80))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p8
+```
+
+
+```{r}
+MAF_Chr9 <- MAF[MAF$Chromosome == 9, ]
+dim(MAF_Chr9)
+p9 <- ggplot(MAF_Chr9, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR9", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 80))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p9
+```
+
+```{r}
+MAF_Chr10 <- MAF[MAF$Chromosome == 10, ]
+dim(MAF_Chr10)
+p10 <- ggplot(MAF_Chr10, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR10", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 100))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p10
+```
+
+
+
+```{r}
+MAF_Chr11 <- MAF[MAF$Chromosome == 11, ]
+dim(MAF_Chr11)
+p11 <- ggplot(MAF_Chr11, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR11", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 100))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p11
+```
+
+```{r}
+MAF_Chr12 <- MAF[MAF$Chromosome == 12, ]
+dim(MAF_Chr12)
+p12 <- ggplot(MAF_Chr12, aes(x=Position, y=MAF, fill = MAF, colour="red")) +
+  geom_bar(stat="identity", position = "dodge", show.legend=F) + 
+  facet_wrap(~Group, scales = "free_y", nrow = 4, ncol=1, strip.position = "left") + 
+  theme_minimal()+
+  theme(plot.title = element_text( face="bold"))+
+  labs(title = "CHR12", x = "Physical map distance (Mbp)", y = "MAF")+
+  scale_x_continuous(breaks=c(0,20,40, 60, 100))+
+  scale_y_continuous(breaks=c(0.20, 0.60, 1.00))+
+  coord_cartesian(ylim = c(0,1), xlim = c(0, 91))
+p12
+```
+
+
+Using the grid.arrange() to print out the figure for prensetation. MAF of every three chromosomes are ploted on the same page.
+
+```{r}
+
+pdf("CHR1-2-3.pdf")
+grid.arrange(  p1, p2, p3, ncol = 1, heights = c(.3,.3, 0.3), widths = .4)
+dev.off()
+```
+
+```{r}
+
+pdf("CHR4-5-6.pdf")
+grid.arrange(  p4, p5, p6, ncol = 1, heights = c(.3,.3, 0.3), widths = .4)
+dev.off()
+```
+
+
+
+```{r}
+
+pdf("CHR7-8-9.pdf")
+grid.arrange(  p7, p8, p9, ncol = 1, heights = c(.3,.3, 0.3), widths = .4)
+dev.off()
+```
+
+
+
+```{r}
+
+pdf("CHR10-11-12.pdf")
+grid.arrange(  p10, p11, p12, ncol = 1, heights = c(.3,.3, 0.3), widths = .4)
+dev.off()
+```
+
