@@ -1,0 +1,290 @@
+---
+title: "Structure Workflow"
+output:
+  html_document: default
+  html_notebook: default
+---
+# This file is designed to setup and output the necessary files to send to plink and admixture software.
+```{r Load Packages}
+###Loads the necessary libraries
+library(adegenet)
+library(tidyr)
+library(dplyr)
+```
+
+# Loading and examining the SNP data file
+```{r Import and inspect SNP data}
+##Setting wd and loading the SNP data file, this file came from the altered file that another persion in the group did. See the documentation for this file.
+setwd("C:/Users/mdzievit.IASTATE/Dropbox/Classes/EEOB_546X/PEB_Power_Final_Project/Structure_Analysis/")
+data <- read.delim("genetic_map_data_EXPIM2012_wh.txt",header = TRUE)
+
+##Checking the size of the data and column names to make sure it is the right file
+dim(data)
+colnames(data)[1:5]
+
+
+#Transform the data. Data is markers by genotype, want it to be genotype by marker
+data_t <- t(data)
+dim(data_t)
+```
+# Loading and examining the genotype file that contains the a priori sub-pop classification. Inspect and alter the file to make it easier to work with
+```{r Loading, inspect, alter genotype information file}
+##Loading and inspecting the genotype file. This genotype file was directly from the paper. No altering done beforehand.
+genotype <- read.delim("Table_S1.txt",header = TRUE, skip = 1)
+colnames(genotype)
+
+##Reducing the file to the information I need. Genotype name and sub-pop classification
+genotype <- genotype %>% select(SolCAP.T.number,Market.Class)
+
+##Identified incorrect classifications in the genotype file related to the original PCA figure. Need to correct these to make the right plot. Fresh market/Processing is one that was changed after. Vintage/processing were ones that were changed after analysis. I am changing these to their correct classification to remove the type. It causes problems down stream.
+levels(genotype$Market.Class)
+genotype[genotype == "Fresh market/Processing"] <- "Processing"
+genotype[genotype == "Vintage/Processing"] <- "Processing"
+genotype <- droplevels(genotype)
+levels(genotype$Market.Class)
+```
+
+#Removing uncessary columns from snp file
+```{r Reducing SNP file}
+##Adding the columns and removing the 3 lines (markers, chr, cm)
+colnames(data_t) <- data_t[1,]
+data_t <- data_t[-(1:3),]
+
+##Converting to dataframe
+data_t <- as.data.frame(data_t)
+
+##Adding the row names to the same column name as the genotype file
+data_t$SolCAP.T.number <- rownames(data_t)
+rownames(data_t) <- NULL
+```
+
+#This will subet the data: Remove the hybrids for the full data set, and then remove hybrids and keep the processing lines
+```{r Subsetting data into 2 parts: Full and Processing line}
+##Checking the levels of the market class
+levels(genotype$Market.Class)
+
+##Joining the market class info, filtering out hyrbids, dropping the market class, and transforming the table back to the original way
+data_t_info <- genotype %>% 
+  select(SolCAP.T.number, Market.Class) %>% 
+  full_join(data_t, by = c("SolCAP.T.number")) %>%
+  filter(Market.Class != "Hybrid") %>%
+  select(everything(),-Market.Class)
+
+##Subsetting the snp file for the processing part of the analysis
+data_t_info.proc <- genotype %>% 
+  select(SolCAP.T.number, Market.Class) %>% 
+  full_join(data_t, by = c("SolCAP.T.number")) %>%
+  filter(Market.Class != "Hybrid" & 
+           Market.Class == "Fresh market" | 
+           Market.Class == "Processing" | 
+           Market.Class == "Vintage") %>%
+  select(everything(),-Market.Class)
+
+```
+
+
+#Next steps are to convert the two data files (Full and processing) into ped files that can be imported into Plink (Purcell, et. al 2007, Amer. J Human Gen)
+
+
+```{r Transform and add header for full file }
+##Making the first line the header and removing that line
+data_filt_info <- t(data_t_info)
+data_filt_info <- cbind(rownames(data_filt_info),data_filt_info)
+rownames(data_filt_info) <- NULL
+data_filt_info <- as.data.frame(data_filt_info)
+colnames(data_filt_info) <- unlist(data_filt_info[1,])
+data_filt_info <- data_filt_info[-1,]
+
+##Checking the col names, need to rename the marker column name
+colnames(data_filt_info)[1:3]
+colnames(data)[1:3]
+colnames(data_filt_info)[1] <- "SNP.markers"
+```
+
+# Conversion to .ped file
+```{r Conversion and output to .ped files for full file}
+## Adding back the positions of the markers
+data.filt.info.pos <- data %>% 
+  select(SNP.markers,Chromosome,Position..cM.) %>%
+  right_join(data_filt_info,by = ("SNP.markers"))
+
+##Ordering the markers by position
+data.filt.info.pos <- data.filt.info.pos %>% arrange(Chromosome,Position..cM.)
+
+##Transforming and converting to a matrix the data is not genotype by snp
+data.mat <- t(as.matrix(data.filt.info.pos))
+
+##Sets the first line as the column headers and removes the first 3 rows
+colnames(data.mat) <- data.mat[1,]
+data.mat <- data.mat[-(1:3),]
+data.mat <- as.data.frame(data.mat)
+
+##Uses the adegent package to split the snp file into alleles. Right now the genotype is AA for one column, this package splits that one column into 2 columns A A
+data.mat.alleles <- df2genind(data.mat, ploidy = 2, sep = "")
+
+##Saves the object as a dataframe
+data.mat.alleles <- genind2df(data.mat.alleles, oneColPerAll = TRUE)
+
+##Replaces the mdssing allees with 0
+data.mat.alleles[data.mat.alleles == "-"] <- 0
+
+##Converts back to a matrix and removes rownames
+data.mat.alleles <- as.matrix(data.mat.alleles)
+rownames(data.mat.alleles) <- NULL
+
+##Pulls about the names of the columns from the original data matrix, and then doubles it. Do this because when the alleles double from the object it adds a unique variable name. We need the column names to be the same for both alleles. This sets the newly created name file to the doubles allele file
+names <- colnames(data.mat)
+names <- cbind(1:length(names),names)
+names <- rbind(names,names)
+names <- as.data.frame(names)
+names <- names[sort(names$V1),]
+colnames(data.mat.alleles) <- names$names
+
+##Starts pulling out the genotype names and setting the neccessary columns for the ped file
+##The fam, pat, mat, sex, and affection are all dummy variables. They aren't necessary for the final versions.
+data.sampleID <- rownames(data.mat)
+data.famID <- c(1:length(data.sampleID))
+data.famID <- paste("FAM",data.famID,sep = "")
+data.patID <- rep(0,length(data.sampleID))
+data.matID <- rep(0,length(data.sampleID))
+data.sex <- rep(0,length(data.sampleID))
+data.affection <- rep(0,length(data.sampleID))
+data.snpmatrix <- cbind(data.famID,data.sampleID,data.patID,data.matID,data.sex,
+                   data.affection,data.mat.alleles)
+
+##This keeps the original order/position of the file. Had problems with using the cM positions in downstream analysis
+data.snps.orig <- data[1:3] %>% select(everything(),names = SNP.markers) %>% 
+  mutate(BP = 0) %>%
+  arrange(Chromosome,Position..cM.) %>%
+  select(Chromosome,names,Position..cM., BP)
+
+##This is the SNP file that is converted. The BP is a generic 1-last marker that is in order. 
+data.snps <- data.snps.orig %>%
+  mutate(BP = 1:dim(data.snps.orig)[1], Position..cM. = 0,
+         names = 1:dim(data.snps.orig)[1]) %>% 
+  select(Chromosome,names,Position..cM., BP)
+
+##Outputs the 3 necessary files for plink conversion to .bed file that can be used for admixture
+write.table(data.snpmatrix,file = "tomato_SNPs.ped",row.names = FALSE, 
+            col.names = FALSE,sep = " ", quote = FALSE)
+write.table(data.snps, file = "tomato_SNPs.map", row.names = FALSE,
+            col.names = FALSE,sep = " ", quote = FALSE)
+write.table(data.sampleID,file = "tomato_sampleID.txt", row.names = FALSE, 
+            col.names = FALSE,sep = " ", quote = FALSE)
+
+##Creates a sampleID info that we will import in later downstream analysis. It contains the original sub-ppop classification
+data.sampleID.info <- as.data.frame(data.sampleID)
+colnames(data.sampleID.info) <- colnames(genotype)[1]
+data.sampleID.info <- data.sampleID.info %>% 
+  left_join(genotype,by = "SolCAP.T.number") %>%
+  select(SolCAP.T.number,Market.Class)
+write.table(data.sampleID.info,file = "tomato_sampID_info.txt",row.names = FALSE,
+            col.names = TRUE, sep = "\t", quote = FALSE)
+```
+
+#We have finished creating the .ped files for the full snp file
+#Next we will do the same data manipulation, but this time for the processing snps
+```{r Transform and add header for processing file }
+##Making the first line the header and removing that line
+data_filt_info <- t(data_t_info.proc)
+data_filt_info <- cbind(rownames(data_filt_info),data_filt_info)
+rownames(data_filt_info) <- NULL
+data_filt_info <- as.data.frame(data_filt_info)
+colnames(data_filt_info) <- unlist(data_filt_info[1,])
+data_filt_info <- data_filt_info[-1,]
+
+##Checking the col names, need to rename the marker column name
+colnames(data_filt_info)[1:3]
+colnames(data)[1:3]
+colnames(data_filt_info)[1] <- "SNP.markers"
+```
+
+# Conversion to the .ped file
+```{r Conversion and output to .ped files - processing file}
+## Adding back the positions of the markers
+data.filt.info.pos <- data %>% 
+  select(SNP.markers,Chromosome,Position..cM.) %>%
+  right_join(data_filt_info,by = ("SNP.markers"))
+
+##Ordering the markers by position
+data.filt.info.pos <- data.filt.info.pos %>% arrange(Chromosome,Position..cM.)
+
+##Transforming and converting to a matrix the data is not genotype by snp
+data.mat <- t(as.matrix(data.filt.info.pos))
+
+##Sets the first line as the column headers and removes the first 3 rows
+colnames(data.mat) <- data.mat[1,]
+data.mat <- data.mat[-(1:3),]
+data.mat <- as.data.frame(data.mat)
+
+##Uses the adegent package to split the snp file into alleles. Right now the genotype is AA for one column, this package splits that one column into 2 columns A A
+data.mat.alleles <- df2genind(data.mat, ploidy = 2, sep = "")
+
+##Saves the object as a dataframe
+data.mat.alleles <- genind2df(data.mat.alleles, oneColPerAll = TRUE)
+
+##Replaces the mdssing allees with 0
+data.mat.alleles[data.mat.alleles == "-"] <- 0
+
+##Converts back to a matrix and removes rownames
+data.mat.alleles <- as.matrix(data.mat.alleles)
+rownames(data.mat.alleles) <- NULL
+
+##Pulls about the names of the columns from the original data matrix, and then doubles it. Do this because when the alleles double from the object it adds a unique variable name. We need the column names to be the same for both alleles. This sets the newly created name file to the doubles allele file
+names <- colnames(data.mat)
+names <- cbind(1:length(names),names)
+names <- rbind(names,names)
+names <- as.data.frame(names)
+names <- names[sort(names$V1),]
+colnames(data.mat.alleles) <- names$names
+
+##Starts pulling out the genotype names and setting the neccessary columns for the ped file
+##The fam, pat, mat, sex, and affection are all dummy variables. They aren't necessary for the final versions.
+data.sampleID <- rownames(data.mat)
+data.famID <- c(1:length(data.sampleID))
+data.famID <- paste("FAM",data.famID,sep = "")
+data.patID <- rep(0,length(data.sampleID))
+data.matID <- rep(0,length(data.sampleID))
+data.sex <- rep(0,length(data.sampleID))
+data.affection <- rep(0,length(data.sampleID))
+data.snpmatrix <- cbind(data.famID,data.sampleID,data.patID,data.matID,data.sex,
+                   data.affection,data.mat.alleles)
+
+##This keeps the original order/position of the file. Had problems with using the cM positions in downstream analysis
+data.snps.orig <- data[1:3] %>% select(everything(),names = SNP.markers) %>% 
+  mutate(BP = 0) %>%
+  arrange(Chromosome,Position..cM.) %>%
+  select(Chromosome,names,Position..cM., BP)
+
+##This is the SNP file that is converted. The BP is a generic 1-last marker that is in order. 
+data.snps <- data.snps.orig %>%
+  mutate(BP = 1:dim(data.snps.orig)[1], Position..cM. = 0,
+         names = 1:dim(data.snps.orig)[1]) %>% 
+  select(Chromosome,names,Position..cM., BP)
+
+##Outputs the 3 necessary files for plink conversion to .bed file that can be used for admixture
+write.table(data.snpmatrix,file = "tomato_SNPs_proc.ped",row.names = FALSE, 
+            col.names = FALSE,sep = " ", quote = FALSE)
+write.table(data.snps, file = "tomato_SNPs_proc.map", row.names = FALSE,
+            col.names = FALSE,sep = " ", quote = FALSE)
+write.table(data.sampleID,file = "tomato_sampleID_proc.txt", row.names = FALSE, 
+            col.names = FALSE,sep = " ", quote = FALSE)
+
+##Creates a sampleID info that we will import in later downstream analysis. It contains the original sub-ppop classification
+data.sampleID.info <- as.data.frame(data.sampleID)
+colnames(data.sampleID.info) <- colnames(genotype)[1]
+data.sampleID.info <- data.sampleID.info %>% 
+  left_join(genotype,by = "SolCAP.T.number") %>%
+  select(SolCAP.T.number,Market.Class)
+write.table(data.sampleID.info,file = "tomato_sampID_proc_info.txt",row.names = FALSE,
+            col.names = TRUE, sep = "\t", quote = FALSE)
+```
+#Input the data into PLINK to convert into .bed files
+#http://zzz.bwh.harvard.edu/plink/
+#Code for plink: plink --noweb --file {file name no ext} --out {out file name no ext} --make-bed
+
+#Send files to linux server to run on admixture w/ 5 and 7
+#Admixture: https://www.genetics.ucla.edu/software/admixture/   (Alexander, et. al 2009, Genome Research)
+# admixture {file name w/ext} # of subpops you expect
+
+#subpopulations for both the full and reduced dataset

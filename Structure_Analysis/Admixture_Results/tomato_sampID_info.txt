@@ -234,7 +234,7 @@ SCT_0262	Fresh market
 SCT_0264	Fresh market
 SCT_0267	Fresh market
 SCT_0268	Fresh market
-SCT_0269	Fresh market/Processing
+SCT_0269	Processing
 SCT_0270	Fresh market
 SCT_0271	Fresh market
 SCT_0272	Fresh market
@@ -292,10 +292,10 @@ SCT_0332	Vintage
 SCT_0333	Vintage
 SCT_0334	Vintage
 SCT_0335	Vintage
-SCT_0336	Vintage/Processing
+SCT_0336	Processing
 SCT_0337	Vintage
 SCT_0338	Vintage
-SCT_0340	Vintage/Processing
+SCT_0340	Processing
 SCT_0357	Vintage
 SCT_0358	Vintage
 SCT_0359	Vintage
