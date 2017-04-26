@@ -1,25 +1,107 @@
+#This script is a long, inefficient way of creating the graphs. On git is another R script that is more compact, but contains an error in formatting. See the README file for more details
+#setting working directory and loading required libraries
 setwd("C:/Users/jmcne/Dropbox/Spring 2017/BCB 546X/project")
+library(ggplot2)
 
+#importing LD data created in previous script
 LD <- read.csv("all_subpops_LD_combined.csv", stringsAsFactors = F)
+#setting column names
 colnames(LD) <- c("SNP1", "SNP2", "LD", "Distance", "Subpop", "Chr")
+#changing name of Fresh market subpop, removes the " " between words, replaces with an "_"
 LD$Subpop[LD$Subpop=="Fresh market"] <- "Fresh_market"
 
+#Only interested in pairs of SNPs that are within cM (genetic distance) of each other
 LD <- LD[LD$Distance <= 50,]
+#Creating 3 dataframes, each containing only a single subpopulation/market type. 
 proc <- LD[LD$Subpop=="Processing",]
 fm <- LD[LD$Subpop=="Fresh_market", ]
 vin <- LD[LD$Subpop=="Vintage",]
 
-# sub_LD <- LD[LD$Subpop == unique(LD$Subpop)[i],]
-# 
-# if(unique(sub_LD$Subpop) == "Processing"){
-#   hline_value <-  0.23
-# }
-# if(unique(sub_LD$Subpop) == "Fresh_market"){
-#   hline_value <- 0.12
-# }
-# if(unique(sub_LD$Subpop) == "Vintage"){
-#   hline_value <- 0.11
-# }
+#As mentioned above, this code is inefficient. It has the same thing repeated 36 times, with different names.
+#3 subpopulations * 12 chromosomes = 36 different graphs
+#For the sake of brevity I will copy and paste, and annotate the code for the first graph, proc1 (processing subpop, chromosome 1).
+
+
+proc1 <- proc[proc$Chr==1,] #Subsetting the dataframe proc, which only contains LD data for processing market types, for chromosome 1
+
+#1 # '1' denotes the code below is for chromosome 1
+
+# Below chunk of code is used to calculate the non-linear regression trendlines for the market type and chromosome being analyzed. 
+# The output of the code, fpoints_proc1, is used in the ggplot code that immediately follows
+
+distance <- proc1$Distance #extacting and saving genetic distance between marker pairs (for processing cultivars on chromosome 1)
+LD_data <- proc1$LD #extracting and saving LD between marker pairs
+n <- nrow(proc1) #the number of marker pairs
+HW_st<-c(C=0.3) #A required value for the code below, do not know what it means or how it influences results
+
+#Below is the code/formula to calculate the NLR
+
+temp_nlr<-nls(LD_data ~ ((10+C*distance)/((2+C*distance)*(11+C*distance)))
+              *(1+((3+C*distance)*(12+12*C*distance+(C*distance)^2))/(n*(2+C*distance)*(11+C*distance))),
+              start=HW_st, control=nls.control(maxiter=100))
+
+nlr_summary<-summary(temp_nlr) #saving summary data
+new_rho<-nlr_summary$parameters[1] #saving estimation of population recombination parameter, for use in code below
+
+#Generates new estimates (fpoints_proc1) of LD that correspond to genetic distance. fpoints_proc1 will be used to add a trendline in the ggplot
+
+fpoints_proc1 <-((10+new_rho*distance)/((2+new_rho*distance)*(11+new_rho*distance)))*
+  (1+((3+new_rho*distance)*(12+12*new_rho*distance+(new_rho*distance)^2))/(n*(2+new_rho*distance)*(11+new_rho*distance)))
+
+
+#generates and saves a ggplot item(?). THe output, proc1_gg, can be called again in the future to generate a graph as long as the 
+#the following data is loaded into the R environment: proc1 and fpoints_proc1
+
+proc1_gg<- ggplot(data=proc1, aes(x=proc1$Distance, y=proc1$LD)) + #telling ggplot which data points to look at
+  geom_point(col="grey",size=.4) + #adds grey points of size .4 at the coordinates passed in previous line of code
+  geom_smooth(method = "loess", se=F, col="red", size=.5, span=.9) + #adds a red LOESS curve, line width of 0.5, span (smoothing parameter) of 0.9
+  geom_line(aes(x=proc1$Distance, y=fpoints_proc1), col="blue", size=.5) + #adds a blue NLR curve
+  theme_bw() + #white background, grey background is the default
+  theme(plot.title=element_text(hjust=0.5, size=12, face="bold"), #what settings the plot title will have, size=font size, face='bold' means bold font. 
+    #Starting line for adjusting the 'theme' of the plot
+    legend.title=element_blank(), legend.position = "none", #no legend information
+    axis.text.y = element_text(size=6, color = "black", angle = 90, margin=margin(1,5,1,1,"pt"), hjust=0.5), #setting y axis label parameters, rotated 90 degrees, horiztonally adjusted
+    axis.text.x = element_text(size=7, colour = "black", margin=margin(5,1,1,1, "pt")), #setting x axis label parameters
+    axis.title.x = element_text(size=8), axis.title.y = element_text(size=8), #setting x and y axis title parameters
+    axis.ticks.length=unit(1.5, "mm"), #adjusting tick length on the axis'
+    plot.margin=unit(c(2,5,2,2),"mm"), #adjusting whole plot margins
+    panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #setting the panel border  and grid parameters
+    axis.line = element_line(colour = "black"), #Setting color of axis lines
+    panel.background = element_rect(colour = "black", fill=NA, size=.5)) + #makes a black border go all around all sides of plot, default is only a line for x and y axis, nothing to the top and right
+    #End theme parameters
+  labs(list(x="Genetic Distance",y="r-squared", title=paste("Chromosome", unique(proc1$Chr), sep=" "))) + #setting x & y, and title labels (actual text that will be produced)
+  scale_y_continuous(limits = c(0, 1.00), expand = c(0, 0), breaks = round(seq(0,1,0.1),1)) + #changing the number of tick marks that appear along the y axis
+  scale_x_continuous(limits = c(0, 50), expand = c(0,0), breaks=seq(0,50,5)) + #changing the number of tick marks that appear along the x axis
+  geom_hline(yintercept = 0.23, linetype="dashed") + #adding a dashed horizontal line at y=0.23
+  geom_hline(yintercept = 0.2) #adding a solid horizontal line at y=0.2
+
+###################################
+#the code below appears again about 1000 lines later.
+#It is used to generate plots that contain 12 images. 3 sub groups, 4 chromosomes. 
+##################################
+#loading packages required
+#library(grid)
+#library(gridExtra)
+library("gridExtra", lib.loc="~/R/win-library/3.2")
+library("grid", lib.loc="C:/Program Files/R/R-3.2.3/library")
+
+
+
+#arrangeGrob generates an image that is not displayed in the Rstudio plot viewer
+#the code below will paste together the images listed (proc1_gg then fm1_gg, etc), with 3 columns. So after vin1_gg a new row starts. For chromosomes 1 to 4, for the the three subpopulations of interesting (processing, fresh market and vintage)
+g1 <- arrangeGrob(proc1_gg, fm1_gg, vin1_gg,proc2_gg, fm2_gg, vin2_gg, proc3_gg, fm3_gg, 
+                  vin3_gg, proc4_gg, fm4_gg, vin4_gg, ncol=3)
+ggsave(file="chr1_4.pdf", g1, width = 8, height = 12, units=c("in")) #saves the image 'created' by arrangeGrob as a pdf, 8x12 inches in size
+
+#Creates an image for chromosomes 5 to 8
+g2 <- arrangeGrob(proc5_gg, fm5_gg, vin5_gg,proc6_gg, fm6_gg, vin6_gg, proc7_gg, fm7_gg, vin7_gg, proc8_gg, fm8_gg, vin8_gg, ncol=3)
+ggsave(file="chr5_8.pdf", g2, width = 8, height = 12, units=c("in")) #saving the image
+
+#Creates an image for chromosomes 9 to 12
+g3 <- arrangeGrob(proc9_gg, fm9_gg, vin9_gg,proc10_gg, fm10_gg, vin10_gg, proc11_gg, fm11_gg, vin11_gg, proc12_gg, fm12_gg, vin12_gg, ncol=3)
+ggsave(file="chr9_12.pdf", g3, width = 8, height = 12, units=c("in")) #saving the image
+
+
 
 ####################processing####################
 proc1 <- proc[proc$Chr==1,]
@@ -1332,87 +1414,24 @@ vin12_gg<- ggplot(data=vin12, aes(x=vin12$Distance, y=vin12$LD)) +
   geom_hline(yintercept = 0.2)
 
 
-
+#compiling images 36 images into 3 images of 12
 library(grid)
 library(gridExtra)
 library("gridExtra", lib.loc="~/R/win-library/3.2")
 library("grid", lib.loc="C:/Program Files/R/R-3.2.3/library")
-#grid.arrange(p1, p2, ncol = 2, main = "Main title")
 
-#grid.arrange(proc1_gg, fm1_gg, vin1_gg,proc2_gg, fm2_gg, vin2_gg, proc3_gg, fm3_gg, vin3_gg, proc4_gg, fm4_gg, vin4_gg, ncol=3)
 g1 <- arrangeGrob(proc1_gg, fm1_gg, vin1_gg,proc2_gg, fm2_gg, vin2_gg, proc3_gg, fm3_gg, 
                   vin3_gg, proc4_gg, fm4_gg, vin4_gg, ncol=3)
 ggsave(file="chr1_4.pdf", g1, width = 8, height = 12, units=c("in"))
 
-#grid.arrange(proc5_gg, fm5_gg, vin5_gg,proc6_gg, fm6_gg, vin6_gg, proc7_gg, fm7_gg, vin7_gg, proc8_gg, fm8_gg, vin8_gg, ncol=3)
 
 g2 <- arrangeGrob(proc5_gg, fm5_gg, vin5_gg,proc6_gg, fm6_gg, vin6_gg, proc7_gg, fm7_gg, vin7_gg, proc8_gg, fm8_gg, vin8_gg, ncol=3)
-ggsave(file="chr5_8.pdf", g2, width = 8, height = 12, units=c("in")))
-#grid.arrange(proc9_gg, fm9_gg, vin9_gg,proc10_gg, fm10_gg, vin10_gg, proc11_gg, fm11_gg, vin11_gg, proc12_gg, fm12_gg, vin12_gg, ncol=3)
+ggsave(file="chr5_8.pdf", g2, width = 8, height = 12, units=c("in"))
 
 g3 <- arrangeGrob(proc9_gg, fm9_gg, vin9_gg,proc10_gg, fm10_gg, vin10_gg, proc11_gg, fm11_gg, vin11_gg, proc12_gg, fm12_gg, vin12_gg, ncol=3)
-ggsave(file="chr9_12.pdf", g3, width = 8, height = 12, units=c("in")))
-
-
-vin3_gg
-
-
-
-vin3_gg2<- ggplot(data=vin3, aes(x=vin3$Distance, y=vin3$LD)) + 
-  geom_point(col="grey",size=3) +
-  geom_smooth(method = "loess", se=F, col="red", size=1.5, span=.9) +
-  geom_line(aes(x=vin3$Distance, y=fpoints_vin3), col="blue", size=1.5) +
-  theme_bw() +
-  theme(plot.title=element_text(hjust=0.5, size=17, face="bold"), legend.title=element_blank(), legend.position = "none", 
-        axis.text.y = element_text(size=12, color = "black", angle = 90, margin=margin(1,5,1,1,"pt"), hjust=0.5), 
-        axis.text.x = element_text(size=12, colour = "black", margin=margin(5,1,1,1, "pt")), 
-        axis.title.x = element_text(size=15), axis.title.y = element_text(size=15),
-        axis.ticks.length=unit(1.5, "mm"),
-        plot.margin=unit(c(2,5,2,2),"mm"),
-        panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        axis.line = element_line(colour = "black"), panel.background = element_rect(colour = "black", fill=NA, size=.5))+
-  labs(list(x="Genetic Distance",y="r-squared", title=paste("Chromosome", unique(vin3$Chr), sep=" "))) +
-  scale_y_continuous(limits = c(0, 1.00), expand = c(0, 0), breaks = round(seq(0,1,0.1),1)) +
-  scale_x_continuous(limits = c(0, 50), expand = c(0,0), breaks=seq(0,50,5)) +
-  geom_hline(yintercept = 0.11, linetype="dashed") +
-  geom_hline(yintercept = 0.2)
-
-vin3_gg2
+ggsave(file="chr9_12.pdf", g3, width = 8, height = 12, units=c("in"))
 
 
 
 
 
-
-vin11_gg2<- ggplot(data=vin11, aes(x=vin11$Distance, y=vin11$LD)) + 
-  geom_point(col="grey",size=3) +
-  geom_smooth(method = "loess", se=F, col="red", size=1.5, span=.9) +
-  geom_line(aes(x=vin11$Distance, y=fpoints_vin11), col="blue", size=1.5) +
-  theme_bw() +
-  theme(plot.title=element_text(hjust=0.5, size=18, face="bold"), legend.title=element_blank(), legend.position = "none", 
-        axis.text.y = element_text(size=15, color = "black", angle = 90, margin=margin(1,5,1,1,"pt"), hjust=0.5), 
-        axis.text.x = element_text(size=15, colour = "black", margin=margin(5,1,1,1, "pt")), 
-        axis.title.x = element_text(size=17), axis.title.y = element_text(size=17),
-        axis.ticks.length=unit(1.5, "mm"),
-        plot.margin=unit(c(2,5,2,2),"mm"),
-        panel.border = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        axis.line = element_line(colour = "black"), panel.background = element_rect(colour = "black", fill=NA, size=.5))+
-  labs(list(x="Genetic Distance",y="r-squared", title=paste("Chromosome", unique(vin11$Chr), sep=" "))) +
-  scale_y_continuous(limits = c(0, 1.00), expand = c(0, 0), breaks = round(seq(0,1,0.1),1)) +
-  scale_x_continuous(limits = c(0, 50), expand = c(0,0), breaks=seq(0,50,5)) +
-  geom_hline(yintercept = 0.11, linetype="dashed") +
-  geom_hline(yintercept = 0.2)
-
-vin11_gg2
-
-
-grid.arrange(proc1_gg, fm1_gg, vin1_gg, ncol=3,top="Processing                                                   Fresh market                                           Vintage")
-# pdf("filename.pdf", width = 8, height = 12) # Open a new pdf file
-# grid.arrange(plot1, plot2, plot3, nrow=3) # Write the grid.arrange in the file
-# dev.off() # Close the file
-
-# grid.arrange(plot1, plot2, plot3, nrow=3) #arranges plots within grid
-# 
-# #save
-# g <- arrangeGrob(plot1, plot2, plot3, nrow=3) #generates g
-# ggsave(file="whatever.pdf", g) #saves g
