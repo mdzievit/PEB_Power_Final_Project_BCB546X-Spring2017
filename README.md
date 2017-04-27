@@ -1,9 +1,9 @@
 ## Final Project - PEB Power  
 ### Matt Dzievit, James McNellie, Jinyu Wang, Therin Young
 
-### EEOB 546X - Spring 2017
+### BCB546X - Spring 2017
 
-This documentation is for the final project for EEOB 546x.
+This documentation is for the final project for BCB546x.
 
 Workflow:
 ###Data exploration and preparation
